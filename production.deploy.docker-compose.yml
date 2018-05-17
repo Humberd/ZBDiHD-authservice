@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  api:
+    build:
+      dockerfile: production.deploy.Dockerfile
+  depends_on:
+    - mongo
+  environment:
+    VIRTUAL_HOST: api.zbdihd-authservice.quazarus.com
+    VIRTUAL_PORT: 8080
+    LETSENCRYPT_HOST: api.zbdihd-authservice.quazarus.com
+    LETSENCRYPT_EMAIL: humberd.dev@gmail.com
+    BUILD_NO: ${BUILD_NO}
+    COMMIT: ${COMMIT}
+  networks:
+    - nginx-proxy
+    - db
+
+  mongo:
+    container_name: zbdihd-authservice-test-db
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "auth-service"
+      MONGO_INITDB_ROOT_PASSWORD: "admin123"
+    networks:
+      - db
+
+networks:
+  nginx-proxy:
+    external:
+      name: nginx-proxy
+  db:
+
+volumes:
+  dbdata:

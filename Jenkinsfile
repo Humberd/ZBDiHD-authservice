@@ -66,32 +66,32 @@ node {
         }
     }
 
-//    stage("Deploy") {
-//        dockerfile = "production.deploy.Dockerfile"
-//
-//        try {
-//            sh script: """
-//                docker build \
-//                    -f ${dockerfile} \
-//                    -t ${imageTag} \
-//                    --build-arg COMMIT_HASH=${getCommitHash()} \
-//                    --build-arg BUILD_NUMBER=${getBuildNumber()} . \
-//                    """
-//
-//            withCredentials([file(credentialsId: 'TeamClickerDeployer', variable: 'TeamClickerDeployer')]) {
-//                sh "gcloud auth activate-service-account --key-file=\$TeamClickerDeployer"
-//                sh "gcloud docker -- push ${imageTag}"
-//                sh "gcloud container clusters get-credentials test-cluster --zone europe-west1-b --project team-clicker"
-////                sh "replica_spec=\$(kubectl get ${deploymentName}/${containerName} -o jsonpath='{.spec.replicas}')"
-////                sh "kubectl scale --replicas=0 ${deploymentName} ${containerName}"
-//                sh "kubectl set image deployment/${deploymentName} ${containerName}=${imageTag}"
-////                sh "kubectl scale --replicas=\$replica_spec ${deploymentName} ${containerName}"
-//            }
-//        } finally {
-//            sh "docker rmi ${imageTag}"
-//            sh "gcloud auth revoke"
-//        }
-//    }
+    stage("Deploy") {
+        dockerfile = "production.deploy.Dockerfile"
+
+        try {
+            sh script: """
+                docker build \
+                    -f ${dockerfile} \
+                    -t ${imageTag} \
+                    --build-arg COMMIT_HASH=${getCommitHash()} \
+                    --build-arg BUILD_NUMBER=${getBuildNumber()} . \
+                    """
+
+            withCredentials([file(credentialsId: 'TeamClickerDeployer', variable: 'TeamClickerDeployer')]) {
+                sh "gcloud auth activate-service-account --key-file=\$TeamClickerDeployer"
+                sh "gcloud docker -- push ${imageTag}"
+                sh "gcloud container clusters get-credentials test-cluster --zone europe-west1-b --project team-clicker"
+//                sh "replica_spec=\$(kubectl get ${deploymentName}/${containerName} -o jsonpath='{.spec.replicas}')"
+//                sh "kubectl scale --replicas=0 ${deploymentName} ${containerName}"
+                sh "kubectl set image deployment/${deploymentName} ${containerName}=${imageTag}"
+//                sh "kubectl scale --replicas=\$replica_spec ${deploymentName} ${containerName}"
+            }
+        } finally {
+            sh "docker rmi ${imageTag}"
+            sh "gcloud auth revoke"
+        }
+    }
 
     stage("Post Cleanup") {
         deleteDir()
