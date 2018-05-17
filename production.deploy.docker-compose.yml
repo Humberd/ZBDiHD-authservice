@@ -18,7 +18,7 @@ services:
     - db
 
   mongo:
-    container_name: zbdihd-authservice-test-db
+    container_name: zbdihd-authservice-db
     image: mongo
     ports:
       - "27017:27017"
