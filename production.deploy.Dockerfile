@@ -2,12 +2,6 @@
 FROM openjdk:8-jdk-alpine
 COPY target/zbdihd-auth-service*.jar zbdihd-auth-service.jar
 
-ARG COMMIT_HASH
-ENV COMMIT_HASH=$COMMIT_HASH
-
-ARG BUILD_NUMBER
-ENV BUILD_NUMBER=$BUILD_NUMBER
-
 ENV JAVA_OPTS="-Dspring.profiles.active=production"
 
 EXPOSE 8080
