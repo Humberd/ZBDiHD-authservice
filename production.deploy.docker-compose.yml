@@ -2,6 +2,7 @@ version: "3"
 
 services:
   api:
+    container_name: zbdihd-authservice-api
     build:
       context: .
       dockerfile: production.deploy.Dockerfile
@@ -17,6 +18,7 @@ services:
     networks:
       - nginx-proxy
       - db
+    restart: always
 
   mongo:
     container_name: zbdihd-authservice-db
@@ -30,6 +32,8 @@ services:
       - "dbdata:/data/db"
     networks:
       - db
+    restart: always
+
 
 networks:
   nginx-proxy:
