@@ -1,6 +1,6 @@
 # this Dockerfile is responsible for hosting api
 FROM openjdk:8-jdk-alpine
-COPY target/tc-auth-service*.jar tc-auth-service.jar
+COPY target/zbdihd-auth-service*.jar zbdihd-auth-service.jar
 
 ARG COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
@@ -12,4 +12,4 @@ ENV JAVA_OPTS="-Dspring.profiles.active=production"
 
 EXPOSE 8080
 
-ENTRYPOINT exec java $JAVA_OPTS -jar tc-auth-service.jar
+ENTRYPOINT exec java $JAVA_OPTS -jar zbdihd-auth-service.jar
