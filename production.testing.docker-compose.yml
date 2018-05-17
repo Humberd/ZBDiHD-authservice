@@ -3,8 +3,6 @@ version: "3"
 services:
   postgres:
     container_name: zbdihd-authservice-test-db
-    ports:
-      - "27020:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: "auth-service"
       MONGO_INITDB_ROOT_PASSWORD: "admin123"
