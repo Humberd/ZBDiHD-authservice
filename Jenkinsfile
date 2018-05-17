@@ -1,14 +1,10 @@
 node {
-    def project = "team-clicker"
-    def appName = "auth-service"
-    def imageTag = "eu.gcr.io/${project}/${appName}:${getBuildNumber()}"
     /* ---TEST--- */
-    def testDatabase = "tc-auth-service-tests-db:5432/auth-service-tests"
-    def testDatabaseUsername = "postgres"
+    def testDatabaseUrl = "zbdihd-authservice-test-db"
+    def testDatabasePort = 27020
+    def testDatabaseName = "zbdihd-authservice-test-db"
+    def testDatabaseUsername = "auth-service"
     def testDatabasePassword = "admin123"
-    /* PROD */
-    def deploymentName = "auth-service"
-    def containerName = "app"
 
     /**
      * Making sure, that there are only at most 2 artifacts stored on a server,
@@ -44,56 +40,58 @@ node {
         }
     }
 
-//    stage("Test") {
-//        //noinspection GroovyAssignabilityCheck
-//        dockerComposeFile = "production.testing.docker-compose.yml"
-//
-//        sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
-//        sh "docker-compose -f ${dockerComposeFile} up -d"
-//
-//        try {
-//            withEnv([
-//                    "COMMIT_HASH=${getCommitHash()}",
-//                    "BUILD_NO=${getBuildNumber()}",
-//                    "TC_AUTH_TESTS_DATABASE_URL=${testDatabase}",
-//                    "TC_AUTH_TESTS_DATABASE_USERNAME=${testDatabaseUsername}",
-//                    "TC_AUTH_TESTS_DATABASE_PASSWORD=${testDatabasePassword}"
-//            ]) {
-//                withMaven(maven: "Maven") {
-//                    sh "mvn test -DargLine='-Dspring.profiles.active=production'"
-//                }
-//            }
-//        } finally {
-//            sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
-//        }
-//    }
+    stage("Test") {
+        //noinspection GroovyAssignabilityCheck
+        dockerComposeFile = "production.testing.docker-compose.yml"
 
-    stage("Deploy") {
-        dockerfile = "production.deploy.Dockerfile"
+        sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
+        sh "docker-compose -f ${dockerComposeFile} up -d"
 
         try {
-            sh script: """
-                docker build \
-                    -f ${dockerfile} \
-                    -t ${imageTag} \
-                    --build-arg COMMIT_HASH=${getCommitHash()} \
-                    --build-arg BUILD_NUMBER=${getBuildNumber()} . \
-                    """
-
-            withCredentials([file(credentialsId: 'TeamClickerDeployer', variable: 'TeamClickerDeployer')]) {
-                sh "gcloud auth activate-service-account --key-file=\$TeamClickerDeployer"
-                sh "gcloud docker -- push ${imageTag}"
-                sh "gcloud container clusters get-credentials test-cluster --zone europe-west1-b --project team-clicker"
-//                sh "replica_spec=\$(kubectl get ${deploymentName}/${containerName} -o jsonpath='{.spec.replicas}')"
-//                sh "kubectl scale --replicas=0 ${deploymentName} ${containerName}"
-                sh "kubectl set image deployment/${deploymentName} ${containerName}=${imageTag}"
-//                sh "kubectl scale --replicas=\$replica_spec ${deploymentName} ${containerName}"
+            withEnv([
+                    "COMMIT_HASH=${getCommitHash()}",
+                    "BUILD_NO=${getBuildNumber()}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_URL=${testDatabaseUrl}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_PORT=${testDatabasePort}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_NAME=${testDatabaseName}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_USERNAME=${testDatabaseUsername}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_PASSWORD=${testDatabasePassword}",
+            ]) {
+                withMaven(maven: "Maven") {
+                    sh "mvn test -DargLine='-Dspring.profiles.active=production'"
+                }
             }
         } finally {
-            sh "docker rmi ${imageTag}"
-            sh "gcloud auth revoke"
+            sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
         }
     }
+
+//    stage("Deploy") {
+//        dockerfile = "production.deploy.Dockerfile"
+//
+//        try {
+//            sh script: """
+//                docker build \
+//                    -f ${dockerfile} \
+//                    -t ${imageTag} \
+//                    --build-arg COMMIT_HASH=${getCommitHash()} \
+//                    --build-arg BUILD_NUMBER=${getBuildNumber()} . \
+//                    """
+//
+//            withCredentials([file(credentialsId: 'TeamClickerDeployer', variable: 'TeamClickerDeployer')]) {
+//                sh "gcloud auth activate-service-account --key-file=\$TeamClickerDeployer"
+//                sh "gcloud docker -- push ${imageTag}"
+//                sh "gcloud container clusters get-credentials test-cluster --zone europe-west1-b --project team-clicker"
+////                sh "replica_spec=\$(kubectl get ${deploymentName}/${containerName} -o jsonpath='{.spec.replicas}')"
+////                sh "kubectl scale --replicas=0 ${deploymentName} ${containerName}"
+//                sh "kubectl set image deployment/${deploymentName} ${containerName}=${imageTag}"
+////                sh "kubectl scale --replicas=\$replica_spec ${deploymentName} ${containerName}"
+//            }
+//        } finally {
+//            sh "docker rmi ${imageTag}"
+//            sh "gcloud auth revoke"
+//        }
+//    }
 
     stage("Post Cleanup") {
         deleteDir()
