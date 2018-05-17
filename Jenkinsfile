@@ -2,7 +2,7 @@ node {
     /* ---TEST--- */
     def testDatabaseUrl = "zbdihd-authservice-test-db"
     def testDatabasePort = 27020
-    def testDatabaseName = "zbdihd-authservice-test-db"
+    def testDatabaseName = "admin"
     def testDatabaseUsername = "auth-service"
     def testDatabasePassword = "admin123"
 

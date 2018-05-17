@@ -6,7 +6,6 @@ services:
     ports:
       - "27020:27017"
     environment:
-      MONGO_INITDB_DATABASE: "zbdihd-authservice-test-db"
       MONGO_INITDB_ROOT_USERNAME: "auth-service"
       MONGO_INITDB_ROOT_PASSWORD: "admin123"
     image: mongo
