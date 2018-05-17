@@ -24,7 +24,7 @@ node {
     }
 
     stage("Checkout") {
-        git "https://github.com/Humberd/TeamClicker-AuthService.git"
+        git "https://github.com/Humberd/ZBDiHD-authservice.git"
     }
 
     stage("Build") {
