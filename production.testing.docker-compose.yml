@@ -3,10 +3,11 @@ version: "3"
 services:
   postgres:
     container_name: zbdihd-authservice-test-db
+    image: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: "auth-service"
       MONGO_INITDB_ROOT_PASSWORD: "admin123"
-    image: mongo
+
     networks:
       - jenkins
 
