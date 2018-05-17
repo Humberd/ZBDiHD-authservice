@@ -1,5 +1,6 @@
 package com.teamclicker.authservice.dao
 
+import org.springframework.data.annotation.CreatedDate
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -9,16 +10,10 @@ import javax.validation.constraints.NotNull
 class UserAccountDeletionDAO {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: String? = null
 
     @NotNull
     @Column(name = "createdAt", nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     var createdAt: Date? = null
-
-    @PrePersist
-    protected fun onCreate() {
-        createdAt = Date()
-    }
 }

@@ -1,5 +1,6 @@
 package com.teamclicker.authservice.dao
 
+import org.springframework.data.annotation.CreatedDate
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -10,12 +11,11 @@ import javax.validation.constraints.NotNull
 class EmailPasswordAuthDAO {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: String? = null
 
     @NotNull
     @Column(name = "createdAt", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     var createdAt: Date? = null
 
     @NotBlank
@@ -33,19 +33,4 @@ class EmailPasswordAuthDAO {
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true, optional = true)
     @JoinColumn(name = "passwordResetId", nullable = true)
     var passwordReset: PasswordResetDAO? = null
-
-    @PrePersist
-    protected fun onCreate() {
-        createdAt = Date()
-        lowerCaseFields()
-    }
-
-    @PreUpdate
-    protected fun onUpdate() {
-        lowerCaseFields()
-    }
-
-    private fun lowerCaseFields() {
-        emailLc = email?.toLowerCase()
-    }
 }

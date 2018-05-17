@@ -121,7 +121,7 @@ internal class UserAccountRepositoryTest {
         fun `should not get a UserAccount when User with provided id does not exist`() {
             repositoryHelper.add(ALICE)
 
-            val result = userAccountRepository.findById(-123)
+            val result = userAccountRepository.findById("-123")
 
             assertFalse(result.isPresent)
         }
@@ -157,7 +157,7 @@ internal class UserAccountRepositoryTest {
         fun `should not get a UserAccount when User with provided id does not exist`() {
             repositoryHelper.add(ALICE)
 
-            val result = userAccountRepository.findByIdNoConstraints(-123)
+            val result = userAccountRepository.findByIdNoConstraints("-123")
 
             assertFalse(result.isPresent)
         }

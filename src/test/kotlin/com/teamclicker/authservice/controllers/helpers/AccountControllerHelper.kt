@@ -17,7 +17,7 @@ class AccountControllerHelper(private val http: TestRestTemplate) {
     inner class DeleteAccountEndpointBuilder :
         EndpointBuilder<DeleteAccountEndpointBuilder, Void, String>(String::class.java, http) {
 
-        fun accountId(value: Long) = this.addParam("accountId", value)
+        fun accountId(value: String) = this.addParam("accountId", value)
 
         override fun <T> build(httpEntity: HttpEntity<Void>, responseBodyType: Class<T>): ResponseEntity<T> {
             return http.deleteForEntity(
@@ -32,7 +32,7 @@ class AccountControllerHelper(private val http: TestRestTemplate) {
     inner class UndeleteAccountEndpointBuilder :
         EndpointBuilder<UndeleteAccountEndpointBuilder, Void, String>(String::class.java, http) {
 
-        fun accountId(value: Long) = this.addParam("accountId", value)
+        fun accountId(value: String) = this.addParam("accountId", value)
 
         override fun <T> build(httpEntity: HttpEntity<Void>, responseBodyType: Class<T>): ResponseEntity<T> {
             return http.postForEntity(
@@ -47,7 +47,7 @@ class AccountControllerHelper(private val http: TestRestTemplate) {
     inner class UpdateRolesEndpointBuilder :
         EndpointBuilder<UpdateRolesEndpointBuilder, AccountUpdateRolesDTO, String>(String::class.java, http) {
 
-        fun accountId(value: Long) = this.addParam("accountId", value)
+        fun accountId(value: String) = this.addParam("accountId", value)
 
         override fun <T> build(
             httpEntity: HttpEntity<AccountUpdateRolesDTO>,

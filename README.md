@@ -1,4 +1,4 @@
-# Team Clicker Auth Service
+# ZBDiHD Auth Service
 
 ## Deployment requirements
 

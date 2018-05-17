@@ -4,7 +4,7 @@ import com.teamclicker.authservice.dao.AuthenticationMethod
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 data class JWTData(
-    val accountId: Long,
+    val accountId: String,
     val authenticationMethod: AuthenticationMethod,
     val roles: Set<String>
 ) {

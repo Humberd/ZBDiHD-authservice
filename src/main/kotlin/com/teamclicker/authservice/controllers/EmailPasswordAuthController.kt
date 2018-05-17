@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.*
@@ -56,7 +55,6 @@ class EmailPasswordAuthController(
         ]
     )
     @PreAuthorize("isAnonymous()")
-    @Transactional
     @PostMapping("/signUp")
     fun signUp(@RequestBody @Valid body: EPSignUpDTO): ResponseEntity<Void> {
         val userExists = userAccountRepository.existsByEmail(body.email?.toLowerCase()!!)
@@ -67,6 +65,7 @@ class EmailPasswordAuthController(
         val newUserAccount = UserAccountDAO().also {
             it.emailPasswordAuth = EmailPasswordAuthDAO().also {
                 it.email = body.email
+                it.emailLc = body.email?.toLowerCase()
                 it.password = bCryptPasswordEncoder.encode(body.password)
             }
             it.roles = setOf(UserRoleDAO("USER"))
@@ -125,7 +124,6 @@ class EmailPasswordAuthController(
             ApiResponse(code = 403, message = "Unauthorized request")
         ]
     )
-    @Transactional
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/changePassword")
     fun changePassword(
@@ -174,7 +172,6 @@ Only ANONYMOUS users can request reset password email
         ]
     )
     @PreAuthorize("isAnonymous()")
-    @Transactional
     @PostMapping("/sendPasswordResetEmail")
     fun sendPasswordResetEmail(@RequestBody @Valid body: EPSendPasswordResetEmailDTO): ResponseEntity<Void> {
         val userAccount = userAccountRepository.findByEmail(body.email?.toLowerCase()!!)
@@ -195,6 +192,7 @@ Only ANONYMOUS users can request reset password email
             }
         }
 
+        userAccountRepository.save(userAccount.get())
         emailService.sendPasswordResetEmail(userAccount.get().emailPasswordAuth?.email!!, token)
 
         return ResponseEntity(HttpStatus.OK)
@@ -215,7 +213,6 @@ Only ANONYMOUS requester can reset a password.
         ]
     )
     @PreAuthorize("isAnonymous()")
-    @Transactional
     @PostMapping("/resetPassword")
     fun resetPassword(@RequestBody @Valid body: EPResetPasswordDTO): ResponseEntity<Void> {
         val tokenHash = hashingService.hashBySHA_256(body.token!!)
@@ -228,6 +225,7 @@ Only ANONYMOUS requester can reset a password.
             it.emailPasswordAuth?.password = bCryptPasswordEncoder.encode(body.newPassword)
             it.emailPasswordAuth?.passwordReset = null
         }
+        userAccountRepository.save(account.get())
 
         return ResponseEntity(HttpStatus.OK)
     }

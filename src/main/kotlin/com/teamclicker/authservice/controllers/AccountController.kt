@@ -17,7 +17,6 @@ import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -43,9 +42,8 @@ Only ADMIN can delete any user account.
         ]
     )
     @PreAuthorize("isAuthenticated()")
-    @Transactional
     @DeleteMapping("/{accountId}/delete")
-    fun deleteAccount(@PathVariable accountId: Long, jwt: JWTData): ResponseEntity<Void> {
+    fun deleteAccount(@PathVariable accountId: String, jwt: JWTData): ResponseEntity<Void> {
         when {
             jwt.`is`(ADMIN) -> {
                 logger.debug { "Deleting account $accountId as $ADMIN(${jwt.accountId})" }
@@ -69,6 +67,8 @@ Only ADMIN can delete any user account.
             it.deletion = UserAccountDeletionDAO()
         }
 
+        userAccountRepository.save(account.get())
+
         return ResponseEntity(HttpStatus.OK)
     }
 
@@ -86,9 +86,8 @@ Only ADMIN can undelete any user account
         ]
     )
     @PreAuthorize("hasAuthority($_ADMIN)")
-    @Transactional
     @PostMapping("/{accountId}/undelete")
-    fun undeleteAccount(@PathVariable accountId: Long, jwt: JWTData): ResponseEntity<Void> {
+    fun undeleteAccount(@PathVariable accountId: String, jwt: JWTData): ResponseEntity<Void> {
 
         val account = userAccountRepository.findByIdNoConstraints(accountId)
         if (!account.isPresent) {
@@ -99,6 +98,8 @@ Only ADMIN can undelete any user account
         account.get().also {
             it.deletion = null
         }
+
+        userAccountRepository.save(account.get())
 
         return ResponseEntity(HttpStatus.OK)
     }
@@ -117,11 +118,10 @@ Only ADMIN can update any user roles
         ]
     )
     @PreAuthorize("hasAnyAuthority($_ADMIN)")
-    @Transactional
     @PutMapping("/{accountId}/roles")
     fun updateRoles(
         @RequestBody @Valid body: AccountUpdateRolesDTO,
-        @PathVariable accountId: Long,
+        @PathVariable accountId: String,
         jwt: JWTData
     ): ResponseEntity<Void> {
         val userAccount = userAccountRepository.findById(accountId)
@@ -132,6 +132,7 @@ Only ADMIN can update any user roles
         userAccount.get().also {
             it.roles = body.roles.map { UserRoleDAO(it) }.toSet()
         }
+        userAccountRepository.save(userAccount.get())
         return ResponseEntity(HttpStatus.OK)
     }
 

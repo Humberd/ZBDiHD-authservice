@@ -17,11 +17,11 @@ class ClaimsToJWTDataMapper : AbstractMapper<Claims, JWTData>() {
         )
     }
 
-    private fun getAccountId(from: Claims): Long {
+    private fun getAccountId(from: Claims): String {
         return try {
-            from.get("accountId", java.lang.Long::class.java).toLong()
+            from.get("accountId", String::class.java)
         } catch (e: RequiredTypeException) {
-            from.get("accountId", java.lang.Integer::class.java).toLong()
+            from.get("accountId", String::class.java)
         }
     }
 

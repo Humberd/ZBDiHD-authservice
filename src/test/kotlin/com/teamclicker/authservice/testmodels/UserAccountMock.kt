@@ -25,6 +25,7 @@ data class UserAccountMock(
     fun toEmailPasswordAuthDAO(): EmailPasswordAuthDAO {
         return EmailPasswordAuthDAO().also {
             it.email = email
+            it.emailLc = email?.toLowerCase()
             it.password = password
         }
     }

@@ -206,7 +206,7 @@ internal class AccountControllerTest {
             authHelper.signUp(DAVE_ADMIN)
 
             accountHelper.undeleteAccount()
-                .accountId(-4321)
+                .accountId("-4321")
                 .with(DAVE_ADMIN)
                 .expectError().also {
                     assertEquals(HttpStatus.valueOf(411), it.statusCode)
@@ -269,7 +269,7 @@ internal class AccountControllerTest {
                 it.roles = setOf(ADMIN, USER)
             }
             accountHelper.updateRoles()
-                .accountId(-4321)
+                .accountId("-4321")
                 .with(DAVE_ADMIN)
                 .sending(body)
                 .expectError().also {

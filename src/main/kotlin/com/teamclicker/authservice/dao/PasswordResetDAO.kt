@@ -1,5 +1,8 @@
 package com.teamclicker.authservice.dao
 
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.mongodb.core.index.CompoundIndex
+import org.springframework.data.mongodb.core.index.CompoundIndexes
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -9,15 +12,17 @@ import javax.validation.constraints.NotNull
     name = "passwordReset",
     indexes = [Index(name = "validTokenIndex", columnList = "expiresAt,token")]
 )
+@CompoundIndexes(
+    CompoundIndex(name="validTokenIndex", def="{'expiresAt': 1, 'token': 1}")
+)
 class PasswordResetDAO {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: String? = null
 
     @NotNull
     @Column(name = "createdAt", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     var createdAt: Date? = null
 
     @NotNull
@@ -28,9 +33,4 @@ class PasswordResetDAO {
     @NotNull
     @Column(name = "token", nullable = false)
     var token: String? = null
-
-    @PrePersist
-    protected fun onCreate() {
-        createdAt = Date()
-    }
 }
