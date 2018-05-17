@@ -25,6 +25,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "auth-service"
       MONGO_INITDB_ROOT_PASSWORD: "admin123"
+    volumes:
+      - "dbdata:/data/db"
     networks:
       - db
 
