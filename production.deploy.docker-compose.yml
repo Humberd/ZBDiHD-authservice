@@ -4,18 +4,18 @@ services:
   api:
     build:
       dockerfile: production.deploy.Dockerfile
-  depends_on:
-    - mongo
-  environment:
-    VIRTUAL_HOST: api.zbdihd-authservice.quazarus.com
-    VIRTUAL_PORT: 8080
-    LETSENCRYPT_HOST: api.zbdihd-authservice.quazarus.com
-    LETSENCRYPT_EMAIL: humberd.dev@gmail.com
-    BUILD_NO: ${BUILD_NO}
-    COMMIT: ${COMMIT}
-  networks:
-    - nginx-proxy
-    - db
+    depends_on:
+      - mongo
+    environment:
+      VIRTUAL_HOST: api.zbdihd-authservice.quazarus.com
+      VIRTUAL_PORT: 8080
+      LETSENCRYPT_HOST: api.zbdihd-authservice.quazarus.com
+      LETSENCRYPT_EMAIL: humberd.dev@gmail.com
+      BUILD_NO: ${BUILD_NO}
+      COMMIT: ${COMMIT}
+    networks:
+      - nginx-proxy
+      - db
 
   mongo:
     container_name: zbdihd-authservice-db
