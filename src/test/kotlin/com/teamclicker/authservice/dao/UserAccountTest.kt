@@ -6,6 +6,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal class UserAccountTest {
 
@@ -14,7 +15,9 @@ internal class UserAccountTest {
         @Test
         fun `should return true when deletion is not null`() {
             val userAccount = UserAccountDAO().also {
-                it.deletion = UserAccountDeletionDAO()
+                it.deletion = UserAccountDeletionDAO().also {
+                    it.createdAt = Date()
+                }
             }
 
             assertTrue(userAccount.isDeleted())

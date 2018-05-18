@@ -10,14 +10,6 @@ import java.util.*
 @Repository
 interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
 
-    //    @Query(
-//        """
-//            select user
-//            from UserAccountDAO as user
-//            where user.emailPasswordAuth.emailLc = :emailLc
-//            and user.deletion is null
-//        """
-//    )
     @Query(
         """
             {
@@ -28,15 +20,6 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     )
     fun findByEmail(@Param("emailLc") emailLc: String): Optional<UserAccountDAO>
 
-    // https://stackoverflow.com/a/12052390/4256929
-//    @Query(
-//        """
-//            select case when (count (user) > 0) then true else false end
-//            from UserAccountDAO as user
-//            where user.emailPasswordAuth.emailLc = :emailLc
-//            and user.deletion is null
-//        """
-//    )
     @Query(
         value = """
             {
@@ -48,14 +31,6 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     )
     fun existsByEmail(@Param("emailLc") emailLc: String): Boolean
 
-    //    @Query(
-//        """
-//            select user
-//            from UserAccountDAO as user
-//            where user.id = :id
-//            and user.deletion is null
-//        """
-//    )
     @Query(
         """
             {
@@ -66,13 +41,6 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     )
     override fun findById(@Param("id") id: String): Optional<UserAccountDAO>
 
-//    @Query(
-//        """
-//            select user
-//            from UserAccountDAO as user
-//            where user.id = :id
-//        """
-//    )
     @Query(
         """
             {
@@ -82,15 +50,6 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     )
     fun findByIdNoConstraints(@Param("id") id: String): Optional<UserAccountDAO>
 
-//    @Query(
-//        """
-//            select user
-//            from UserAccountDAO as user
-//            where user.emailPasswordAuth.passwordReset.token = :token
-//            and user.emailPasswordAuth.passwordReset.expiresAt >= :currentDate
-//            and user.deletion is null
-//        """
-//    )
     @Query(
         """
             {

@@ -5,9 +5,12 @@ import com.teamclicker.authservice.dao.Role.USER
 import com.teamclicker.authservice.dao.SpELRole._ADMIN
 import com.teamclicker.authservice.dao.UserAccountDeletionDAO
 import com.teamclicker.authservice.dao.UserRoleDAO
+import com.teamclicker.authservice.dto.AccountResponseDTO
 import com.teamclicker.authservice.dto.AccountUpdateRolesDTO
 import com.teamclicker.authservice.exceptions.EntityDoesNotExistException
 import com.teamclicker.authservice.exceptions.InvalidCredentialsException
+import com.teamclicker.authservice.exceptions.UnauthorizedRequestException
+import com.teamclicker.authservice.mappers.UserAccountDAOToAccountResponseDTO
 import com.teamclicker.authservice.repositories.UserAccountRepository
 import com.teamclicker.authservice.security.JWTData
 import io.swagger.annotations.ApiOperation
@@ -18,13 +21,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.validation.Valid
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth/accounts")
 class AccountController(
-    private val userAccountRepository: UserAccountRepository
+    private val userAccountRepository: UserAccountRepository,
+    private val userAccountDAOToAccountResponseDTO: UserAccountDAOToAccountResponseDTO
 ) {
 
     @ApiOperation(
@@ -64,7 +69,9 @@ Only ADMIN can delete any user account.
             throw EntityDoesNotExistException("User does not exist")
         }
         account.get().also {
-            it.deletion = UserAccountDeletionDAO()
+            it.deletion = UserAccountDeletionDAO().also {
+                it.createdAt = Date()
+            }
         }
 
         userAccountRepository.save(account.get())
@@ -121,8 +128,7 @@ Only ADMIN can update any user roles
     @PutMapping("/{accountId}/roles")
     fun updateRoles(
         @RequestBody @Valid body: AccountUpdateRolesDTO,
-        @PathVariable accountId: String,
-        jwt: JWTData
+        @PathVariable accountId: String
     ): ResponseEntity<Void> {
         val userAccount = userAccountRepository.findById(accountId)
         if (!userAccount.isPresent) {
@@ -136,9 +142,63 @@ Only ADMIN can update any user roles
         return ResponseEntity(HttpStatus.OK)
     }
 
-//    fun listUsers(
-//
-//    ): ResponseEntity<List<>>
+    @ApiOperation(
+        value = "Lists all users", notes = """
+Only ADMIN can see a list of users
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(code = 200, message = "Ok"),
+            ApiResponse(code = 403, message = "Unauthorized request")
+        ]
+    )
+    @PreAuthorize("hasAnyAuthority($_ADMIN)")
+    @GetMapping("/")
+    fun listUsers(): ResponseEntity<List<AccountResponseDTO>> {
+        return ResponseEntity.ok(userAccountRepository.findAll()
+            .map { userAccountDAOToAccountResponseDTO.parse(it) })
+    }
+
+    @ApiOperation(
+        value = "Gets a user", notes = """
+User can only fetch himself
+ADMIN can fetch everyone
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(code = 200, message = "Ok"),
+            ApiResponse(code = 401, message = "Invalid credentials"),
+            ApiResponse(code = 403, message = "Unauthorized request"),
+            ApiResponse(code = 411, message = "User does not exist")
+        ]
+    )
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{accountId}")
+    fun getUser(@PathVariable accountId: String,
+                jwt: JWTData): ResponseEntity<AccountResponseDTO> {
+        when {
+            jwt.`is`(ADMIN) -> {
+                logger.debug { "Deleting account $accountId as $ADMIN(${jwt.accountId})" }
+            }
+            jwt.`is`(USER) -> {
+                if (accountId != jwt.accountId) {
+                    throw InvalidCredentialsException("Cannot delete account of another user")
+                }
+            }
+        }
+
+        val account = userAccountRepository.findById(accountId)
+        if (!account.isPresent) {
+            logger.error {
+                """Trying to get a user, but the user does not exist.""".trimMargin()
+            }
+            throw EntityDoesNotExistException("User does not exist")
+        }
+
+        return ResponseEntity.ok(userAccountDAOToAccountResponseDTO.parse(account.get()))
+    }
 
 
     companion object : KLogging()
