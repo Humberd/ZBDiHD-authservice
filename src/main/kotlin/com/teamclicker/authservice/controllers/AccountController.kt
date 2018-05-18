@@ -154,7 +154,7 @@ Only ADMIN can see a list of users
         ]
     )
     @PreAuthorize("hasAnyAuthority($_ADMIN)")
-    @GetMapping("/")
+    @GetMapping("")
     fun listUsers(): ResponseEntity<List<AccountResponseDTO>> {
         return ResponseEntity.ok(userAccountRepository.findAll()
             .map { userAccountDAOToAccountResponseDTO.parse(it) })
