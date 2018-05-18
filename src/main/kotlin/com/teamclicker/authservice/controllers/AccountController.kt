@@ -136,6 +136,10 @@ Only ADMIN can update any user roles
         return ResponseEntity(HttpStatus.OK)
     }
 
+//    fun listUsers(
+//
+//    ): ResponseEntity<List<>>
+
 
     companion object : KLogging()
 }

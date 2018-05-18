@@ -59,7 +59,7 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     @Query(
         """
             {
-                'id': ?0,
+                '_id': ?0,
                 'deletion': null
             }
         """
@@ -76,7 +76,7 @@ interface UserAccountRepository : MongoRepository<UserAccountDAO, String> {
     @Query(
         """
             {
-                'id': ?0
+                '_id': ?0
             }
         """
     )

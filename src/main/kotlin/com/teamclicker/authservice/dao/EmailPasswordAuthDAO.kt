@@ -1,6 +1,7 @@
 package com.teamclicker.authservice.dao
 
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.domain.Persistable
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -9,10 +10,6 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table(name = "emailPasswordAuth")
 class EmailPasswordAuthDAO {
-    @Id
-    @Column(name = "id", nullable = false, updatable = false)
-    var id: String? = null
-
     @NotNull
     @Column(name = "createdAt", nullable = false)
     @CreatedDate

@@ -1,16 +1,17 @@
 package com.teamclicker.authservice.dao
 
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.domain.Persistable
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity
 @Table(name = "userAccount")
-class UserAccountDAO {
+class UserAccountDAO : Persistable<String> {
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    var id: String? = null
+    var _id: String? = null
 
     @NotNull
     @Column(name = "createdAt", nullable = false)
@@ -39,4 +40,8 @@ class UserAccountDAO {
 
 
     fun isDeleted() = deletion !== null
+
+    override fun getId() = _id
+
+    override fun isNew() = _id === null
 }

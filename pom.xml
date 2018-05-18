@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>zbdihd-auth-service</name>
+    <name>zbdihd-auth-servicew</name>
     <description>Team Clicker Auth Service</description>
 
     <parent>
