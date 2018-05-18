@@ -43,7 +43,7 @@ class SwaggerBean {
 
         // TODO: change to a proper data
         val DEFAULT_API_INFO = ApiInfoBuilder()
-            .title("Team Clicker Auth Service")
+            .title("ZBDiHD Auth Service")
             .description("REST API Service responsible for authorizing users")
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
@@ -52,7 +52,7 @@ class SwaggerBean {
             .contact(
                 Contact(
                     "Maciej Sawicki",
-                    "teamclicker.com",
+                    "quazarus.com",
                     "humberd.dev@gmail.com"
                 )
             )

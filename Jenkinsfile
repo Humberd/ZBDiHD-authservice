@@ -47,31 +47,31 @@ node {
         }
     }
 
-//    stage("Test") {
-//        //noinspection GroovyAssignabilityCheck
-//        dockerComposeFile = "production.testing.docker-compose.yml"
-//
-//        sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
-//        sh "docker-compose -f ${dockerComposeFile} up -d"
-//
-//        try {
-//            withEnv([
-//                    "COMMIT_HASH=${getCommitHash()}",
-//                    "BUILD_NO=${getBuildNumber()}",
-//                    "ZBDIHD_AUTH_TESTS_DATABASE_URL=${testDatabaseUrl}",
-//                    "ZBDIHD_AUTH_TESTS_DATABASE_PORT=${testDatabasePort}",
-//                    "ZBDIHD_AUTH_TESTS_DATABASE_NAME=${testDatabaseName}",
-//                    "ZBDIHD_AUTH_TESTS_DATABASE_USERNAME=${testDatabaseUsername}",
-//                    "ZBDIHD_AUTH_TESTS_DATABASE_PASSWORD=${testDatabasePassword}",
-//            ]) {
-//                withMaven(maven: "Maven") {
-//                    sh "mvn test -DargLine='-Dspring.profiles.active=production'"
-//                }
-//            }
-//        } finally {
-//            sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
-//        }
-//    }
+    stage("Test") {
+        //noinspection GroovyAssignabilityCheck
+        dockerComposeFile = "production.testing.docker-compose.yml"
+
+        sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
+        sh "docker-compose -f ${dockerComposeFile} up -d"
+
+        try {
+            withEnv([
+                    "COMMIT_HASH=${getCommitHash()}",
+                    "BUILD_NO=${getBuildNumber()}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_URL=${testDatabaseUrl}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_PORT=${testDatabasePort}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_NAME=${testDatabaseName}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_USERNAME=${testDatabaseUsername}",
+                    "ZBDIHD_AUTH_TESTS_DATABASE_PASSWORD=${testDatabasePassword}",
+            ]) {
+                withMaven(maven: "Maven") {
+                    sh "mvn test -DargLine='-Dspring.profiles.active=production'"
+                }
+            }
+        } finally {
+            sh "docker-compose -f ${dockerComposeFile} down --rmi all --remove-orphans"
+        }
+    }
 
     stage("Deploy") {
         dockerComposeFile = "production.deploy.docker-compose.yml"
